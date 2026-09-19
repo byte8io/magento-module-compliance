@@ -1,0 +1,45 @@
+{
+    "name": "byte8/module-compliance",
+    "description": "EU consumer-compliance toolkit for Magento 2. First feature: the EU legal-guarantee (statutory warranty) notice with the official harmonised label on product, cart and checkout pages — mandatory in the EU from 27 Sep 2026 (EmpCo).",
+    "keywords": [
+        "magento2",
+        "magento 2",
+        "compliance",
+        "eu",
+        "empco",
+        "legal guarantee",
+        "gewährleistung",
+        "statutory warranty"
+    ],
+    "require": {
+        "php": "~8.2.0||~8.3.0||~8.4.0||~8.5.0",
+        "magento/framework": "^103",
+        "magento/module-store": "^101",
+        "magento/module-cms": "^104",
+        "magento/module-checkout": "^100.4",
+        "magento/module-theme": "^101",
+        "magento/module-config": "^101"
+    },
+    "suggest": {
+        "swissup/firecheckout": "The module ships a ready-made firecheckout_index_index layout; on plain Luma checkout the standard checkout_index_index layout is used instead."
+    },
+    "type": "magento2-module",
+    "license": [
+        "OSL-3.0"
+    ],
+    "authors": [
+        {
+            "name": "Byte8 Ltd",
+            "email": "support@byte8.io"
+        }
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Byte8\\Compliance\\": ""
+        }
+    },
+    "version": "1.0.0"
+}

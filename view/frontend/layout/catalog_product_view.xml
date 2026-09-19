@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * EU legal-guarantee notice on the product page, appended to the product-info
+ * column on standard (Luma-based) themes. Toggled by
+ * byte8_compliance/legal_guarantee/show_on_pdp.
+ *
+ * Themes that rebuild the PDP block tree (dropping externally referenced
+ * children of product.info.main) should instead declare the block in their own
+ * catalog_product_view.xml next to the add-to-cart button — keep the distinct
+ * block name there so the two declarations never collide.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="product.info.main">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="byte8.product.legal.guarantee.pdp"
+                   template="Byte8_Compliance::legal-guarantee/teaser.phtml"
+                   ifconfig="byte8_compliance/legal_guarantee/show_on_pdp">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Byte8\Compliance\ViewModel\LegalGuarantee\Notice</argument>
+                    <argument name="modifier_class" xsi:type="string">eu-guarantee--product</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>
