@@ -37,7 +37,7 @@ bin/magento cache:flush
 Until the package is listed on Packagist, add the GitHub repository first:
 
 ```sh
-composer config repositories.byte8-compliance vcs https://github.com/byte8io/module-compliance
+composer config repositories.byte8-compliance vcs https://github.com/byte8io/magento-module-compliance
 composer require byte8/module-compliance
 ```
 
