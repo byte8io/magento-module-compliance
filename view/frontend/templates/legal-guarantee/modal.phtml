@@ -1,0 +1,39 @@
+<?php
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * Shared modal content for the EU legal-guarantee notice — the full official
+ * label. Rendered once per page (server-side, gated to EU store views); the
+ * Firecheckout Knockout teaser opens this single #eu-guarantee-modal via the
+ * shared opener (js/legal-guarantee/modal-opener.js).
+ *
+ * Optional block argument:
+ *   hide_page_link — on cart/checkout, hide the "To the information page" link so
+ *                    customers are not tempted to leave the purchase funnel.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+/** @var \Byte8\Compliance\ViewModel\LegalGuarantee\Notice $viewModel */
+$viewModel = $block->getData('view_model');
+if (!$viewModel || !$viewModel->isEnabled()) {
+    return;
+}
+
+$labelUrl = $viewModel->getLabelUrl();
+$pageUrl = $viewModel->getPageUrl();
+$hidePageLink = (bool) $block->getData('hide_page_link');
+?>
+<div id="eu-guarantee-modal" class="eu-guarantee-modal-content" style="display:none;">
+    <img class="eu-guarantee-modal-content__label"
+         src="<?= $escaper->escapeUrl($labelUrl) ?>"
+         alt="<?= $escaper->escapeHtmlAttr(__('Statutory warranty')) ?>"
+         width="595" height="842" />
+    <?php if (!$hidePageLink): ?>
+    <p class="eu-guarantee-modal-content__link">
+        <a href="<?= $escaper->escapeUrl($pageUrl) ?>"><?= $escaper->escapeHtml(__('To the information page')) ?></a>
+    </p>
+    <?php endif; ?>
+</div>

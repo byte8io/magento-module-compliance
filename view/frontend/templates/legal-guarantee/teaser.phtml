@@ -1,0 +1,70 @@
+<?php
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * EU legal-guarantee notice teaser (EmpCo — mandatory 27 Sep 2026). Shows a
+ * small language-neutral EU-flag icon with a "Learn more" trigger that opens the
+ * full official label in a modal. The link also points at the standalone CMS
+ * page, so it still works if JS is unavailable (graceful degradation) and for
+ * SEO.
+ *
+ * Multi-store: the ViewModel gates rendering to EU store views only (and honours
+ * the admin master switch) and returns the correct official SVG for the store's
+ * language. Per-surface visibility (pdp/cart/checkout) is controlled by the
+ * layout ifconfig toggles.
+ *
+ * Optional block arguments:
+ *   modifier_class — extra BEM modifier(s) on the box for a placement, e.g.
+ *                    "eu-guarantee--cart", "eu-guarantee--checkout", "eu-guarantee--product".
+ *   hide_page_link — on cart/checkout, hide the "To the information page" link in
+ *                    the modal so customers are not tempted to leave the funnel.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+/** @var \Byte8\Compliance\ViewModel\LegalGuarantee\Notice $viewModel */
+$viewModel = $block->getData('view_model');
+if (!$viewModel || !$viewModel->isEnabled()) {
+    return;
+}
+
+$iconUrl = $viewModel->getIconUrl();
+$labelUrl = $viewModel->getLabelUrl();
+$pageUrl = $viewModel->getPageUrl();
+$modalTitle = (string) __('Statutory warranty');
+
+$modifierClass = trim((string) $block->getData('modifier_class'));
+$boxClass = 'eu-guarantee' . ($modifierClass !== '' ? ' ' . $modifierClass : '');
+$hidePageLink = (bool) $block->getData('hide_page_link');
+?>
+<div class="<?= $escaper->escapeHtmlAttr($boxClass) ?>" role="note">
+    <div class="eu-guarantee__thumb">
+        <img src="<?= $escaper->escapeUrl($iconUrl) ?>"
+             alt="<?= $escaper->escapeHtmlAttr(__('Statutory warranty')) ?>"
+             loading="lazy" width="48" height="48" />
+    </div>
+    <div class="eu-guarantee__body">
+        <span class="eu-guarantee__title"><?= $escaper->escapeHtml(__('Statutory warranty')) ?></span>
+        <span class="eu-guarantee__text"><?= $escaper->escapeHtml(__('At least two years statutory warranty.')) ?></span>
+        <a class="eu-guarantee__more" href="<?= $escaper->escapeUrl($pageUrl) ?>"
+           data-mage-init='<?= $escaper->escapeHtmlAttr(json_encode([
+               'Byte8_Compliance/js/legal-guarantee/modal' => ['title' => $modalTitle],
+           ])) ?>'>
+            <?= $escaper->escapeHtml(__('Learn more')) ?> <span aria-hidden="true">&rarr;</span>
+        </a>
+    </div>
+</div>
+
+<div id="eu-guarantee-modal-content" class="eu-guarantee-modal-content" style="display:none;">
+    <img class="eu-guarantee-modal-content__label"
+         src="<?= $escaper->escapeUrl($labelUrl) ?>"
+         alt="<?= $escaper->escapeHtmlAttr(__('Statutory warranty')) ?>"
+         width="595" height="842" />
+    <?php if (!$hidePageLink): ?>
+    <p class="eu-guarantee-modal-content__link">
+        <a href="<?= $escaper->escapeUrl($pageUrl) ?>"><?= $escaper->escapeHtml(__('To the information page')) ?></a>
+    </p>
+    <?php endif; ?>
+</div>

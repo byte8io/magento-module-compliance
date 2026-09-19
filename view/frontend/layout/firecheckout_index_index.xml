@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * EU legal-guarantee notice on the Firecheckout page (EmpCo from 27 Sep 2026).
+ *
+ * Placement: a Knockout box in the order-summary "before place order" region
+ * (Firecheckout's sidebar > summary > itemsAfter), so the reassurance sits right
+ * above the "Jetzt kaufen" button. The box (js/view/checkout/legal-guarantee)
+ * reads its data + gating from window.checkoutConfig
+ * (Model\Checkout\LegalGuaranteeConfigProvider) and opens the shared
+ * #eu-guarantee-modal rendered once below. The in-modal "To the information page"
+ * link is suppressed on checkout to avoid an exit path from the funnel.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!-- Firecheckout pulls in the checkout_index_index handle (<update handle="checkout_index_index"/>),
+             which adds the native server-side teaser. On the FC page we use the Knockout box below
+             instead, so remove the native one here to avoid a duplicate. The native teaser still renders
+             on a true native checkout (FC disabled), where this handle does not apply. -->
+        <referenceBlock name="byte8.checkout.legal.guarantee" remove="true"/>
+        <referenceContainer name="content">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="byte8.checkout.legal.guarantee.modal"
+                   template="Byte8_Compliance::legal-guarantee/modal.phtml"
+                   ifconfig="byte8_compliance/legal_guarantee/show_in_checkout">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Byte8\Compliance\ViewModel\LegalGuarantee\Notice</argument>
+                    <argument name="hide_page_link" xsi:type="boolean">true</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+        <referenceBlock name="checkout.root">
+            <arguments>
+                <argument name="jsLayout" xsi:type="array">
+                    <item name="components" xsi:type="array">
+                        <item name="checkout" xsi:type="array">
+                            <item name="children" xsi:type="array">
+                                <item name="sidebar" xsi:type="array">
+                                    <item name="children" xsi:type="array">
+                                        <item name="summary" xsi:type="array">
+                                            <item name="children" xsi:type="array">
+                                                <item name="itemsAfter" xsi:type="array">
+                                                    <item name="children" xsi:type="array">
+                                                        <item name="byte8-legal-guarantee" xsi:type="array">
+                                                            <item name="component" xsi:type="string">Byte8_Compliance/js/view/checkout/legal-guarantee</item>
+                                                            <item name="sortOrder" xsi:type="string">5</item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                            </item>
+                                        </item>
+                                    </item>
+                                </item>
+                            </item>
+                        </item>
+                    </item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * EU legal-guarantee notice on the cart page (EmpCo from 27 Sep 2026). Placed at
+ * the top of the cart-summary sidebar, next to the proceed-to-checkout button.
+ * Toggled by byte8_compliance/legal_guarantee/show_in_cart.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="cart.summary">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="byte8.cart.legal.guarantee"
+                   template="Byte8_Compliance::legal-guarantee/teaser.phtml"
+                   before="checkout.cart.summary.title"
+                   ifconfig="byte8_compliance/legal_guarantee/show_in_cart">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Byte8\Compliance\ViewModel\LegalGuarantee\Notice</argument>
+                    <argument name="modifier_class" xsi:type="string">eu-guarantee--cart</argument>
+                    <!-- Suppress the "To the information page" link — keep the user in the cart. -->
+                    <argument name="hide_page_link" xsi:type="boolean">true</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

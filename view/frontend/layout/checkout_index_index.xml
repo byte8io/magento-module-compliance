@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * EU legal-guarantee notice on the native checkout page (EmpCo from 27 Sep
+ * 2026). Fallback handle: steelman24 normally serves checkout via Swissup
+ * Firecheckout (see firecheckout_index_index.xml); this covers the native
+ * checkout should Firecheckout ever be disabled. Toggled by
+ * byte8_compliance/legal_guarantee/show_in_checkout.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="byte8.checkout.legal.guarantee"
+                   template="Byte8_Compliance::legal-guarantee/teaser.phtml"
+                   before="checkout.root"
+                   ifconfig="byte8_compliance/legal_guarantee/show_in_checkout">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Byte8\Compliance\ViewModel\LegalGuarantee\Notice</argument>
+                    <argument name="modifier_class" xsi:type="string">eu-guarantee--checkout</argument>
+                    <!-- Suppress the "To the information page" link — keep the user in checkout. -->
+                    <argument name="hide_page_link" xsi:type="boolean">true</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

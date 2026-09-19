@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Expose the EU legal-guarantee teaser data to the checkout JS layer for
+         the Firecheckout Knockout box (before-place-order region). -->
+    <type name="Magento\Checkout\Model\CompositeConfigProvider">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="byte8_legal_guarantee" xsi:type="object">Byte8\Compliance\Model\Checkout\LegalGuaranteeConfigProvider</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

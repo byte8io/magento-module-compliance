@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * Default configuration. All legal-guarantee surfaces are ON by default so the
+ * notice behaves as before out of the box; admins can switch individual surfaces
+ * off per store view under Byte8 > Compliance > Legal Guarantee.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Store/etc/config.xsd">
+    <default>
+        <byte8_compliance>
+            <legal_guarantee>
+                <enabled>1</enabled>
+                <show_on_pdp>1</show_on_pdp>
+                <show_in_cart>1</show_in_cart>
+                <show_in_checkout>1</show_in_checkout>
+            </legal_guarantee>
+        </byte8_compliance>
+    </default>
+</config>

@@ -1,0 +1,20 @@
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<!-- ko if: show -->
+<div class="eu-guarantee eu-guarantee--checkout" role="note">
+    <div class="eu-guarantee__thumb">
+        <img data-bind="attr: {src: iconUrl, alt: titleText}" loading="lazy" width="48" height="48" />
+    </div>
+    <div class="eu-guarantee__body">
+        <span class="eu-guarantee__title" data-bind="text: titleText"></span>
+        <span class="eu-guarantee__text" data-bind="text: textLine"></span>
+        <a class="eu-guarantee__more" data-bind="attr: {href: pageUrl}, click: openModal">
+            <span data-bind="text: moreLabel"></span> <span aria-hidden="true">&rarr;</span>
+        </a>
+    </div>
+</div>
+<!-- /ko -->
