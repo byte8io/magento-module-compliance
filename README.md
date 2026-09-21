@@ -14,7 +14,7 @@ Future EU rules (GPSR, battery regulation, further EmpCo surfaces, …) will be 
   - **Checkout** — Luma checkout via layout, plus a ready-made Knockout component for [Firecheckout](https://firecheckout.net) (before-place-order region) fed by a checkout config provider
 - **Standalone information page** — an idempotent data patch creates a `legal-guarantee` CMS page per EU store view in its own language, so consumers can read the notice without entering checkout
 - **Official label artwork** — the Commission SVGs for German, Italian and Dutch plus a language-neutral EU-stars teaser icon; the full-size label is shown in an accessible modal
-- **Store-view gating** — the notice renders only on EU store views. Gating is by store-view *code*, not locale, deliberately: a Swiss store sharing `de_DE` with a German store must **not** show the label
+- **Store-view gating** — the notice renders only on store views you mark as EU-covered, via a per-store-view **Official Label Language** setting (config-driven, not by store-view code or locale): a Swiss store sharing `de_DE` with a German store is simply left *Not applicable* and shows nothing
 - **Admin configuration** — master switch plus independent per-surface toggles (product page / cart / checkout), all per store view, under **Stores → Configuration → Byte8 → Compliance**
 - **Translations** — `de_DE`, `it_IT`, `nl_NL` bundled
 
@@ -60,25 +60,20 @@ bin/magento cache:flush
 | Setting | Default | Effect |
 |---|---|---|
 | Enable Legal Guarantee Notice | Yes | Master switch — hides the notice everywhere when off |
+| Official Label Language | *Not applicable* | Which official label (German / Italian / Dutch) this store view shows — and the gate: the notice renders only where a language is selected |
 | Show on Product Page | Yes | Teaser below the product info |
 | Show in Cart | Yes | Teaser in the cart summary |
 | Show in Checkout | Yes | Teaser in checkout (Luma and Firecheckout) |
 
-All settings are store-view scoped. The EU gate always applies on top: non-EU store views never show the notice regardless of these toggles.
+All settings are store-view scoped. **Official Label Language** always applies on top: a store view left as *Not applicable* never shows the notice regardless of the per-surface toggles.
 
 ## Mapping your store views
 
-The module decides *which store views are EU* — and which label language each one gets — from the store-view **code** map in `ViewModel/LegalGuarantee/Notice.php`:
+Coverage is **config-driven, not code-driven**. For each EU store view, set **Official Label Language** to the shipped label (German / Italian / Dutch); leave every other store view as *Not applicable*. Because it is a per-store-view setting, this works whatever your store-view codes are — a store view coded `default`, `de`, `german`, etc. is covered as soon as you pick its language. A non-EU store view sharing a locale with an EU one (e.g. a Swiss store on `de_DE`) is simply left *Not applicable*, so there is no locale ambiguity to resolve.
 
-```php
-public const SUPPORTED = [
-    'de' => 'de',
-    'it' => 'it',
-    'nl' => 'nl',
-];
-```
+The shipped languages come from `Model/LegalGuarantee/LabelCatalog.php` (the single source of truth for the admin options, the standalone-page copy, and the SVG filenames). To add another EU language, add an entry there **and** ship the official Commission SVG under `view/frontend/web/images/legal-guarantee-<lang>.svg` plus the `i18n/<locale>.csv` translations — it then appears automatically in the admin select and the CMS-page patch. Pull requests adding further official label languages are welcome.
 
-Adjust the keys to your own store-view codes (e.g. `'default' => 'de'`). To add another EU language, add the map entry **and** ship the official Commission SVG for that language under `view/frontend/web/images/legal-guarantee-<lang>.svg`, the `i18n/<locale>.csv` translations, and extend the CMS-page data patch. Pull requests adding further official label languages are welcome.
+> **Upgrading from ≤ 1.0.1** (the hard-coded store-code version): a one-off data patch (`MigrateLegalGuaranteeStoreConfig`) sets **Official Label Language** for any store view whose *code* is `de`/`it`/`nl`, so existing installs keep their previous behaviour with no manual step. Any other store view is configured in admin.
 
 ## Theme notes
 

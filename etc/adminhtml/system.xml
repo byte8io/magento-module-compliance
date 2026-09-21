@@ -16,11 +16,17 @@
             <resource>Byte8_Compliance::config</resource>
             <group id="legal_guarantee" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Legal Guarantee (Gesetzliche Gewährleistung)</label>
-                <comment><![CDATA[EU statutory-warranty notice (EmpCo, from 27 Sep 2026). The official label is shown only on EU store views (resolved by store-view code in the module); these toggles control where it appears on those stores.]]></comment>
+                <comment><![CDATA[EU statutory-warranty notice (EmpCo, from 27 Sep 2026). Pick the official label language per store view below; these toggles control where it appears on the store views that have a language selected.]]></comment>
                 <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Legal Guarantee Notice</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Master switch. When No, the notice is hidden on every surface regardless of the toggles below.</comment>
+                </field>
+                <field id="label_language" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Official Label Language</label>
+                    <source_model>Byte8\Compliance\Model\Config\Source\LabelLanguage</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                    <comment><![CDATA[The official EU statutory-warranty label to display on THIS store view. Set it per store view (switch the scope selector, top-left) — e.g. German for a German (EU) store. Leave "Not applicable" for non-EU store views (e.g. Switzerland) so the notice stays hidden there. The notice renders only where a language is selected.]]></comment>
                 </field>
                 <field id="show_on_pdp" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Show on Product Page</label>

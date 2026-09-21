@@ -8,48 +8,38 @@ declare(strict_types=1);
 
 namespace Byte8\Compliance\ViewModel\LegalGuarantee;
 
+use Byte8\Compliance\Model\LegalGuarantee\LabelCatalog;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Store\Model\ScopeInterface;
-use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Resolves the EU legal-guarantee notice (Gesetzliche Gewährleistung, EmpCo —
  * mandatory 27 Sep 2026) per store view.
  *
- * Two independent gates:
- *  - EU coverage: by store-view CODE (not locale) — the Swiss (ch) store shares
- *    the de_DE locale with Germany but is NOT in the EU, so a locale gate would
- *    wrongly show the notice there. The store code both gates rendering and picks
- *    the official label language.
+ * Two independent gates, both driven by admin config so the module is portable
+ * across clients regardless of their store-view codes:
+ *  - Label language: byte8_compliance/legal_guarantee/label_language (per store
+ *    view). Its value both gates rendering (empty => the store view is not
+ *    covered, e.g. non-EU Switzerland) and picks the official label language.
+ *    This replaces the previous hard-coded store-view-CODE map, which silently
+ *    rendered nothing on any store whose code was not de/it/nl.
  *  - Admin master switch: byte8_compliance/legal_guarantee/enabled. Per-surface
  *    toggles (pdp/cart/checkout) are applied in layout via ifconfig; this class
- *    enforces the master switch and the EU gate. (The footer reminder now lives
- *    in the theme footer CMS block, not this module.)
+ *    enforces the master switch and the language gate.
  *
  * The label graphic is the official Commission SVG shipped verbatim; its
  * elements are non-editable (Durchführungsverordnung (EU) 2025/1960, Anhang I).
  */
 class Notice implements ArgumentInterface
 {
-    /**
-     * EU store-view CODE => language key of the official label + copy. Must match
-     * the store views the data patch creates the CMS page for
-     * (Setup\Patch\Data\AddLegalGuaranteeContent). Add a store view here (and ship
-     * its official SVG + i18n + CMS page) to extend coverage.
-     */
-    public const SUPPORTED = [
-        'de' => 'de',
-        'it' => 'it',
-        'nl' => 'nl',
-    ];
-
     public const PAGE_IDENTIFIER = 'legal-guarantee';
 
     private const XML_PATH_ENABLED = 'byte8_compliance/legal_guarantee/enabled';
+
+    private const XML_PATH_LABEL_LANGUAGE = 'byte8_compliance/legal_guarantee/label_language';
 
     /**
      * Language-neutral teaser icon (EU-flag stars) — shared across every store
@@ -57,41 +47,46 @@ class Notice implements ArgumentInterface
      */
     private const ICON_ASSET = 'Byte8_Compliance::images/eu-guarantee-icon.svg';
 
+    /**
+     * Label language used only as a last-resort asset fallback (the notice never
+     * renders without a configured language, so this is defensive).
+     */
+    private const FALLBACK_LANGUAGE = 'de';
+
     public function __construct(
-        private readonly StoreManagerInterface $storeManager,
         private readonly AssetRepository $assetRepo,
         private readonly UrlInterface $urlBuilder,
-        private readonly ScopeConfigInterface $scopeConfig
+        private readonly ScopeConfigInterface $scopeConfig,
+        private readonly LabelCatalog $catalog
     ) {
     }
 
     /**
-     * Language key for the current store view, or null if the notice does not
-     * apply here (non-EU / unsupported store view).
+     * Configured label language for the current store view, or null if the notice
+     * does not apply here (no language selected / unshipped language).
      */
     public function getLanguageKey(): ?string
     {
-        try {
-            $code = (string) $this->storeManager->getStore()->getCode();
-        } catch (NoSuchEntityException $e) {
-            return null;
-        }
+        $key = (string) $this->scopeConfig->getValue(
+            self::XML_PATH_LABEL_LANGUAGE,
+            ScopeInterface::SCOPE_STORE
+        );
 
-        return self::SUPPORTED[$code] ?? null;
+        return $this->catalog->has($key) ? $key : null;
     }
 
     /**
-     * True when the notice may render at all on this store view: it is an EU
-     * store AND the admin master switch is on. Per-surface visibility is handled
-     * by the layout ifconfig toggles.
+     * True when the notice may render at all on this store view: the admin master
+     * switch is on AND a shipped label language is configured. Per-surface
+     * visibility is handled by the layout ifconfig toggles.
      */
     public function isEnabled(): bool
     {
-        if ($this->getLanguageKey() === null) {
+        if (!$this->scopeConfig->isSetFlag(self::XML_PATH_ENABLED, ScopeInterface::SCOPE_STORE)) {
             return false;
         }
 
-        return $this->scopeConfig->isSetFlag(self::XML_PATH_ENABLED, ScopeInterface::SCOPE_STORE);
+        return $this->getLanguageKey() !== null;
     }
 
     /**
@@ -103,14 +98,14 @@ class Notice implements ArgumentInterface
     }
 
     /**
-     * URL of the official colour SVG for the current store view's language.
+     * URL of the official colour SVG for the current store view's configured language.
      */
     public function getLabelUrl(): string
     {
-        $key = $this->getLanguageKey() ?? 'de';
+        $key = $this->getLanguageKey() ?? self::FALLBACK_LANGUAGE;
 
         return $this->assetRepo->getUrl(
-            'Byte8_Compliance::images/legal-guarantee-' . $key . '.svg'
+            'Byte8_Compliance::images/' . $this->catalog->getSvgFilename($key)
         );
     }
 
