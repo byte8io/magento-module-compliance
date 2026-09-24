@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/byte8io/magento-module-compliance/compare/v2.0.0...v2.1.0) (2026-09-24)
+
+
+### Features
+
+* split the checkout legal-guarantee notice into desktop (sidebar) + mobile boxes ([e22ea92](https://github.com/byte8io/magento-module-compliance/commit/e22ea92d071b618174797940ea354dfb283dea2b))
+
 ## [2.0.0](https://github.com/byte8io/magento-module-compliance/compare/v1.0.1...v2.0.0) (2026-09-21)
 
 
