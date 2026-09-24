@@ -2,10 +2,12 @@
  * Copyright © Byte8 Ltd. All rights reserved.
  * See LICENSE.txt for license details.
  *
- * Checkout (Firecheckout) box for the EU legal-guarantee notice, rendered in the
- * order-summary "before place order" region. All gating + localisation is
+ * Desktop checkout box for the EU legal-guarantee notice, rendered in the
+ * sidebar's order-summary region — added by LayoutProcessorPlugin on native
+ * checkout and by layout jsLayout on Firecheckout. All gating + localisation is
  * resolved server-side in LegalGuaranteeConfigProvider and read from
- * window.checkoutConfig here; the box opens the shared #eu-guarantee-modal.
+ * window.checkoutConfig here; the box opens the shared #eu-guarantee-modal (the
+ * same one the mobile box opens, through one shared opener → single init guard).
  */
 define([
     'uiComponent',

@@ -11,16 +11,25 @@
  * above the "Jetzt kaufen" button. The box (js/view/checkout/legal-guarantee)
  * reads its data + gating from window.checkoutConfig
  * (Model\Checkout\LegalGuaranteeConfigProvider) and opens the shared
- * #eu-guarantee-modal rendered once below. The in-modal "To the information page"
- * link is suppressed on checkout to avoid an exit path from the funnel.
+ * #eu-guarantee-modal. The in-modal "To the information page" link is suppressed
+ * on checkout to avoid an exit path from the funnel.
+ *
+ * Note vs. native checkout: LayoutProcessorPlugin (which adds the desktop box on
+ * native checkout) is guarded to the checkout_index_index action, so it does NOT
+ * run here — Firecheckout keeps its own jsLayout injection below, and there is no
+ * double box. Firecheckout's sidebar is visible at every width, so the desktop
+ * box stays shown on all breakpoints here (the mobile/desktop breakpoint CSS is
+ * scoped to native checkout only).
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <!-- Firecheckout pulls in the checkout_index_index handle (<update handle="checkout_index_index"/>),
-             which adds the native server-side teaser. On the FC page we use the Knockout box below
-             instead, so remove the native one here to avoid a duplicate. The native teaser still renders
-             on a true native checkout (FC disabled), where this handle does not apply. -->
+             which adds the native server-side mobile box. On the FC page we use the sidebar Knockout box
+             below instead, so remove the mobile one here to avoid a duplicate. It still renders on a true
+             native checkout (FC disabled), where this handle does not apply.
+             The shared #eu-guarantee-modal comes from that same reused handle; the block below is a
+             same-named, identical safety declaration in case FC ever stops reusing it (layout merges them). -->
         <referenceBlock name="byte8.checkout.legal.guarantee" remove="true"/>
         <referenceContainer name="content">
             <block class="Magento\Framework\View\Element\Template"

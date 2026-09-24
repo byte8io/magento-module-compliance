@@ -5,9 +5,20 @@
  * See LICENSE.txt for license details.
  *
  * EU legal-guarantee notice on the native checkout page (EmpCo from 27 Sep
- * 2026). Fallback handle: steelman24 normally serves checkout via Swissup
- * Firecheckout (see firecheckout_index_index.xml); this covers the native
- * checkout should Firecheckout ever be disabled. Toggled by
+ * 2026). Dual placement, one shared modal:
+ *  - Desktop: a Knockout box in the sidebar's order-summary region, added by
+ *    LayoutProcessorPlugin (native checkout only) — see the plugin + di.xml.
+ *  - Mobile/tablet: the server-side box below, at the top of the checkout
+ *    content — the native sidebar is a slide panel hidden by default there.
+ *    CSS shows exactly one box per breakpoint (see _module.less).
+ *  - The shared #eu-guarantee-modal is rendered once here (modal.phtml); both
+ *    the mobile box (via hide_inline_modal → shared opener) and the desktop
+ *    Knockout box open it, so the modal widget initialises once. The in-modal
+ *    "To the information page" link is suppressed to keep the user in checkout.
+ *
+ * steelman24 normally serves checkout via Swissup Firecheckout (see
+ * firecheckout_index_index.xml, which reuses this handle); this also covers a
+ * true native checkout should Firecheckout be disabled. Toggled by
  * byte8_compliance/legal_guarantee/show_in_checkout.
  */
 -->
@@ -21,8 +32,20 @@
                    ifconfig="byte8_compliance/legal_guarantee/show_in_checkout">
                 <arguments>
                     <argument name="view_model" xsi:type="object">Byte8\Compliance\ViewModel\LegalGuarantee\Notice</argument>
-                    <argument name="modifier_class" xsi:type="string">eu-guarantee--checkout</argument>
+                    <argument name="modifier_class" xsi:type="string">eu-guarantee--checkout-mobile</argument>
                     <!-- Suppress the "To the information page" link — keep the user in checkout. -->
+                    <argument name="hide_page_link" xsi:type="boolean">true</argument>
+                    <!-- Share the single #eu-guarantee-modal with the desktop box. -->
+                    <argument name="hide_inline_modal" xsi:type="boolean">true</argument>
+                </arguments>
+            </block>
+            <block class="Magento\Framework\View\Element\Template"
+                   name="byte8.checkout.legal.guarantee.modal"
+                   template="Byte8_Compliance::legal-guarantee/modal.phtml"
+                   before="checkout.root"
+                   ifconfig="byte8_compliance/legal_guarantee/show_in_checkout">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Byte8\Compliance\ViewModel\LegalGuarantee\Notice</argument>
                     <argument name="hide_page_link" xsi:type="boolean">true</argument>
                 </arguments>
             </block>

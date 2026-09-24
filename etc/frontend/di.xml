@@ -7,12 +7,19 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <!-- Expose the EU legal-guarantee teaser data to the checkout JS layer for
-         the Firecheckout Knockout box (before-place-order region). -->
+         the desktop sidebar Knockout box (order-summary region). -->
     <type name="Magento\Checkout\Model\CompositeConfigProvider">
         <arguments>
             <argument name="configProviders" xsi:type="array">
                 <item name="byte8_legal_guarantee" xsi:type="object">Byte8\Compliance\Model\Checkout\LegalGuaranteeConfigProvider</item>
             </argument>
         </arguments>
+    </type>
+    <!-- Native checkout only: place the desktop box in the sidebar order-summary
+         region. Firecheckout injects its own box via layout XML. -->
+    <type name="Magento\Checkout\Block\Checkout\LayoutProcessor">
+        <plugin name="byte8_compliance_legal_guarantee_desktop_box"
+                type="Byte8\Compliance\Plugin\Checkout\Block\LayoutProcessorPlugin"
+                sortOrder="100"/>
     </type>
 </config>

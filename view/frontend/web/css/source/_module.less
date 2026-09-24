@@ -149,8 +149,31 @@ body.checkout-cart-index .cart-summary {
     margin-top: 20px;
 }
 
-//  Checkout (Firecheckout): the box sits in the order-summary "before place order"
-//  region — give it a small top gap from the element above it.
-.eu-guarantee--checkout {
+//  Checkout: two boxes, one shown per breakpoint.
+//   - Desktop (--checkout-desktop): a Knockout box in the sidebar order-summary
+//     region — added by LayoutProcessorPlugin on native checkout, and by layout
+//     jsLayout on Firecheckout. Sits next to the order summary.
+//   - Mobile/tablet (--checkout-mobile): a server-side box at the top of the
+//     checkout content, because on native checkout the sidebar is a slide panel
+//     hidden by default below @screen__m.
+//  The breakpoint show/hide is scoped to native checkout (.checkout-index-index):
+//  Firecheckout keeps its sidebar visible at every width, so its desktop box must
+//  stay shown on mobile too.
+.eu-guarantee--checkout-desktop,
+.eu-guarantee--checkout-mobile {
     margin-top: 10px;
+}
+
+.checkout-index-index {
+    .eu-guarantee--checkout-desktop {
+        @media (max-width: (@screen__m - 1)) {
+            display: none;
+        }
+    }
+
+    .eu-guarantee--checkout-mobile {
+        @media (min-width: @screen__m) {
+            display: none;
+        }
+    }
 }

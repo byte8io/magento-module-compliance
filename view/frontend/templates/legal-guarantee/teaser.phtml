@@ -16,9 +16,15 @@
  *
  * Optional block arguments:
  *   modifier_class — extra BEM modifier(s) on the box for a placement, e.g.
- *                    "eu-guarantee--cart", "eu-guarantee--checkout", "eu-guarantee--product".
+ *                    "eu-guarantee--cart", "eu-guarantee--checkout-mobile", "eu-guarantee--product".
  *   hide_page_link — on cart/checkout, hide the "To the information page" link in
  *                    the modal so customers are not tempted to leave the funnel.
+ *   hide_inline_modal — do not render this teaser's own #eu-guarantee-modal-content;
+ *                    open the shared #eu-guarantee-modal (rendered once by
+ *                    modal.phtml) via the shared opener instead. Use where another
+ *                    box on the same page already renders that modal — e.g. the
+ *                    checkout mobile box, which shares the one modal with the
+ *                    desktop Knockout box (single init guard, no id collision).
  *
  * @var \Magento\Framework\View\Element\Template $block
  * @var \Magento\Framework\Escaper $escaper
@@ -38,6 +44,13 @@ $modalTitle = (string) __('Statutory warranty');
 $modifierClass = trim((string) $block->getData('modifier_class'));
 $boxClass = 'eu-guarantee' . ($modifierClass !== '' ? ' ' . $modifierClass : '');
 $hidePageLink = (bool) $block->getData('hide_page_link');
+$hideInlineModal = (bool) $block->getData('hide_inline_modal');
+
+// Open this teaser's own inline modal, or — when the page renders the shared
+// #eu-guarantee-modal once for several boxes — route through the shared opener.
+$moreInit = $hideInlineModal
+    ? ['Byte8_Compliance/js/legal-guarantee/shared-trigger' => ['title' => $modalTitle]]
+    : ['Byte8_Compliance/js/legal-guarantee/modal' => ['title' => $modalTitle]];
 ?>
 <div class="<?= $escaper->escapeHtmlAttr($boxClass) ?>" role="note">
     <div class="eu-guarantee__thumb">
@@ -49,14 +62,13 @@ $hidePageLink = (bool) $block->getData('hide_page_link');
         <span class="eu-guarantee__title"><?= $escaper->escapeHtml(__('Statutory warranty')) ?></span>
         <span class="eu-guarantee__text"><?= $escaper->escapeHtml(__('At least two years statutory warranty.')) ?></span>
         <a class="eu-guarantee__more" href="<?= $escaper->escapeUrl($pageUrl) ?>"
-           data-mage-init='<?= $escaper->escapeHtmlAttr(json_encode([
-               'Byte8_Compliance/js/legal-guarantee/modal' => ['title' => $modalTitle],
-           ])) ?>'>
+           data-mage-init='<?= $escaper->escapeHtmlAttr(json_encode($moreInit)) ?>'>
             <?= $escaper->escapeHtml(__('Learn more')) ?> <span aria-hidden="true">&rarr;</span>
         </a>
     </div>
 </div>
 
+<?php if (!$hideInlineModal): ?>
 <div id="eu-guarantee-modal-content" class="eu-guarantee-modal-content" style="display:none;">
     <img class="eu-guarantee-modal-content__label"
          src="<?= $escaper->escapeUrl($labelUrl) ?>"
@@ -68,3 +80,4 @@ $hidePageLink = (bool) $block->getData('hide_page_link');
     </p>
     <?php endif; ?>
 </div>
+<?php endif; ?>
