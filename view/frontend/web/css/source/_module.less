@@ -156,15 +156,19 @@ body.checkout-cart-index .cart-summary {
 //   - Mobile/tablet (--checkout-mobile): a server-side box at the top of the
 //     checkout content, because on native checkout the sidebar is a slide panel
 //     hidden by default below @screen__m.
-//  The breakpoint show/hide is scoped to native checkout (.checkout-index-index):
-//  Firecheckout keeps its sidebar visible at every width, so its desktop box must
-//  stay shown on mobile too.
+//  The breakpoint show/hide targets NATIVE checkout only. Swissup Firecheckout
+//  adds BOTH `checkout-index-index` and `firecheckout` to the body (see
+//  Swissup\Firecheckout\Observer\AddPageClassName), keeps the order-summary
+//  sidebar visible at every width, and renders only the desktop box (it removes
+//  the mobile one) — so it must be excluded from the mobile-hide, or its single
+//  box vanishes on mobile. `:not(.firecheckout)` does exactly that, and is inert
+//  for clients without Firecheckout (the class is never present).
 .eu-guarantee--checkout-desktop,
 .eu-guarantee--checkout-mobile {
     margin-top: 10px;
 }
 
-.checkout-index-index {
+.checkout-index-index:not(.firecheckout) {
     .eu-guarantee--checkout-desktop {
         @media (max-width: (@screen__m - 1)) {
             display: none;

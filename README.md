@@ -73,7 +73,7 @@ Coverage is **config-driven, not code-driven**. For each EU store view, set **Of
 
 The shipped languages come from `Model/LegalGuarantee/LabelCatalog.php` (the single source of truth for the admin options, the standalone-page copy, and the SVG filenames). To add another EU language, add an entry there **and** ship the official Commission SVG under `view/frontend/web/images/legal-guarantee-<lang>.svg` plus the `i18n/<locale>.csv` translations — it then appears automatically in the admin select and the CMS-page patch. Pull requests adding further official label languages are welcome.
 
-> **Upgrading from ≤ 1.0.1** (the hard-coded store-code version): a one-off data patch (`MigrateLegalGuaranteeStoreConfig`) sets **Official Label Language** for any store view whose *code* is `de`/`it`/`nl`, so existing installs keep their previous behaviour with no manual step. Any other store view is configured in admin.
+> **Auto-configuration.** A data patch (`MigrateLegalGuaranteeStoreConfig`) sets **Official Label Language** automatically for each store view whose **locale** maps to a shipped label (`de_DE` → `de`, …) **and** whose **default country** is in the EU — so an ordinary German/Italian/Dutch EU store is covered on install with no manual step, whatever its store-view code. The EU-country gate keeps the label off non-EU store views that share an EU locale (e.g. a Swiss store on `de_DE`). It never overwrites a language an admin has already set, so you can still override per store view in admin.
 
 ## Theme notes
 
