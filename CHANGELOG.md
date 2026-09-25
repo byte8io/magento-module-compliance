@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.0](https://github.com/byte8io/magento-module-compliance/compare/v2.1.0...v2.2.0) (2026-09-25)
+
+
+### Features
+
+* auto-configure label language from locale+EU-country; scope checkout CSS off Firecheckout ([55e8052](https://github.com/byte8io/magento-module-compliance/commit/55e80527a71cb1d893da1584913331f3abaf7187))
+* localised standalone-page URL keys + meta title/description ([c785856](https://github.com/byte8io/magento-module-compliance/commit/c785856df2301fc853e45042f079b50dc6f4ee17))
+
 ## [2.1.0](https://github.com/byte8io/magento-module-compliance/compare/v2.0.0...v2.1.0) (2026-09-24)
 
 
