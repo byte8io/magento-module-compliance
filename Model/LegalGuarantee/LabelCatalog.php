@@ -38,17 +38,26 @@ class LabelCatalog
     private const LANGUAGES = [
         'de' => [
             'name' => 'German (Deutschland)',
+            'identifier' => 'gesetzliche-gewaehrleistung',
             'title' => 'Gesetzliche Gewährleistung',
+            'meta_title' => 'Gesetzliche Gewährleistung – Ihre EU-Verbraucherrechte',
+            'meta_description' => 'Gesetzliche Gewährleistung nach EU-Recht: Für Verbrauchsgüter gilt eine Gewährleistung von mindestens zwei Jahren. Hier finden Sie das offizielle EU-Gewährleistungslabel und Ihre Rechte.',
             'intro' => 'Als Verkäufer informieren wir Sie mit dem harmonisierten EU-Gewährleistungslabel über Ihre gesetzlichen Rechte. Für Verbrauchsgüter gilt eine gesetzliche Gewährleistung von mindestens zwei Jahren.',
         ],
         'it' => [
             'name' => 'Italian (Italia)',
+            'identifier' => 'garanzia-legale-di-conformita',
             'title' => 'Garanzia legale di conformità',
+            'meta_title' => 'Garanzia legale di conformità – I tuoi diritti UE',
+            'meta_description' => 'Garanzia legale di conformità secondo il diritto UE: i beni di consumo beneficiano di una garanzia di almeno due anni. Qui trovi l\'etichetta UE ufficiale e i tuoi diritti.',
             'intro' => 'In qualità di venditore, vi informiamo dei vostri diritti tramite l\'etichetta UE armonizzata sulla garanzia legale. I beni di consumo beneficiano di una garanzia legale di conformità di almeno due anni.',
         ],
         'nl' => [
             'name' => 'Dutch (Nederland)',
+            'identifier' => 'wettelijke-garantie',
             'title' => 'Wettelijke garantie',
+            'meta_title' => 'Wettelijke garantie – Uw EU-consumentenrechten',
+            'meta_description' => 'Wettelijke garantie volgens EU-recht: voor consumptiegoederen geldt een garantie van ten minste twee jaar. Hier vindt u het officiële EU-garantielabel en uw rechten.',
             'intro' => 'Als verkoper informeren wij u met het geharmoniseerde EU-garantielabel over uw wettelijke rechten. Voor consumptiegoederen geldt een wettelijke garantie van ten minste twee jaar.',
         ],
     ];
@@ -72,13 +81,23 @@ class LabelCatalog
     }
 
     /**
-     * Metadata (name/title/intro) for a shipped language, or null if unknown.
+     * Metadata for a shipped language, or null if unknown.
      *
-     * @return array{name: string, title: string, intro: string}|null
+     * @return array{name: string, identifier: string, title: string, meta_title: string, meta_description: string, intro: string}|null
      */
     public function get(string $key): ?array
     {
         return self::LANGUAGES[$key] ?? null;
+    }
+
+    /**
+     * Localised standalone-page URL key for a language (e.g. "gesetzliche-gewaehrleistung"),
+     * or null if the language is unknown. Used both to create the CMS page and to
+     * resolve the notice's "Learn more" / footer link, so the two stay in lockstep.
+     */
+    public function getPageIdentifier(string $key): ?string
+    {
+        return self::LANGUAGES[$key]['identifier'] ?? null;
     }
 
     /**

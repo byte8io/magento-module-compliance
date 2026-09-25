@@ -26,9 +26,12 @@ use Psr\Log\LoggerInterface;
  * 27 Sep 2026) for each covered store view in its own language, so consumers can
  * view the notice without going through checkout.
  *
- * One CMS page per store view (identifier "legal-guarantee"), each carrying the
- * official Commission SVG for that store view's configured language. Coverage is
- * driven by the per-store-view admin setting
+ * One CMS page per store view, each at its language's localised URL key
+ * (LabelCatalog::getPageIdentifier(), e.g. gesetzliche-gewaehrleistung) and
+ * carrying the official Commission SVG plus meta title/description for that
+ * language. The same identifier is what Notice::getPageUrl() links to, so page
+ * and link stay in lockstep. Coverage is driven by the per-store-view admin
+ * setting
  * byte8_compliance/legal_guarantee/label_language (see LabelCatalog) — NOT by
  * store-view code — so it is portable across clients. A store view with no
  * language set is skipped. Idempotent.
@@ -55,8 +58,6 @@ use Psr\Log\LoggerInterface;
  */
 class AddLegalGuaranteeContent implements DataPatchInterface
 {
-    private const IDENTIFIER = 'legal-guarantee';
-
     private const XML_PATH_LABEL_LANGUAGE = 'byte8_compliance/legal_guarantee/label_language';
 
     private const OLD_MODULE = 'Byte8_LegalGuarantee::';
@@ -102,12 +103,14 @@ class AddLegalGuaranteeContent implements DataPatchInterface
     }
 
     /**
-     * @param array{name: string, title: string, intro: string} $data
+     * @param array{name: string, identifier: string, title: string, meta_title: string, meta_description: string, intro: string} $data
      */
     private function createPageForStore(int $storeId, string $language, array $data): void
     {
+        $identifier = $data['identifier'];
+
         $existing = $this->pageCollectionFactory->create()
-            ->addFieldToFilter(PageInterface::IDENTIFIER, self::IDENTIFIER)
+            ->addFieldToFilter(PageInterface::IDENTIFIER, $identifier)
             ->addStoreFilter($storeId, false);
 
         if ($existing->getSize() > 0) {
@@ -136,9 +139,11 @@ HTML;
 
         /** @var PageInterface $page */
         $page = $this->pageFactory->create();
-        $page->setIdentifier(self::IDENTIFIER)
+        $page->setIdentifier($identifier)
             ->setTitle($data['title'])
             ->setContentHeading($data['title'])
+            ->setMetaTitle($data['meta_title'])
+            ->setMetaDescription($data['meta_description'])
             ->setPageLayout('1column')
             ->setContent($content)
             ->setIsActive(true)

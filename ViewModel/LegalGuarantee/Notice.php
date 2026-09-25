@@ -35,8 +35,6 @@ use Magento\Store\Model\ScopeInterface;
  */
 class Notice implements ArgumentInterface
 {
-    public const PAGE_IDENTIFIER = 'legal-guarantee';
-
     private const XML_PATH_ENABLED = 'byte8_compliance/legal_guarantee/enabled';
 
     private const XML_PATH_LABEL_LANGUAGE = 'byte8_compliance/legal_guarantee/label_language';
@@ -110,10 +108,16 @@ class Notice implements ArgumentInterface
     }
 
     /**
-     * URL of the standalone information page (resolves per store view).
+     * URL of the standalone information page for the current store view's
+     * language — the localised CMS-page URL key (e.g. gesetzliche-gewaehrleistung),
+     * which is the same identifier AddLegalGuaranteeContent creates the page with.
      */
     public function getPageUrl(): string
     {
-        return $this->urlBuilder->getUrl(self::PAGE_IDENTIFIER);
+        $key = $this->getLanguageKey() ?? self::FALLBACK_LANGUAGE;
+
+        return $this->urlBuilder->getUrl(
+            (string) $this->catalog->getPageIdentifier($key)
+        );
     }
 }
