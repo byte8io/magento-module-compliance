@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/byte8io/magento-module-compliance/compare/v2.2.0...v2.2.1) (2026-09-27)
+
+
+### Bug Fixes
+
+* reinit config after writing label_language so the page patch sees it ([7515726](https://github.com/byte8io/magento-module-compliance/commit/7515726d38491301b8e8b07c9d7059f57f97adc1))
+
 ## [2.2.0](https://github.com/byte8io/magento-module-compliance/compare/v2.1.0...v2.2.0) (2026-09-25)
 
 
