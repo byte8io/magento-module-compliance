@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Byte8\Compliance\Setup\Patch\Data;
 
 use Byte8\Compliance\Model\LegalGuarantee\LabelCatalog;
+use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
@@ -62,12 +63,15 @@ class MigrateLegalGuaranteeStoreConfig implements DataPatchInterface
         private readonly StoreManagerInterface $storeManager,
         private readonly WriterInterface $configWriter,
         private readonly ScopeConfigInterface $scopeConfig,
+        private readonly ReinitableConfigInterface $reinitableConfig,
         private readonly LabelCatalog $catalog
     ) {
     }
 
     public function apply(): self
     {
+        $wrote = false;
+
         /** @var StoreInterface $store */
         foreach ($this->storeManager->getStores() as $store) {
             $storeId = (int) $store->getId();
@@ -112,6 +116,17 @@ class MigrateLegalGuaranteeStoreConfig implements DataPatchInterface
                 ScopeInterface::SCOPE_STORES,
                 $storeId
             );
+            $wrote = true;
+        }
+
+        // Make the writes visible to dependent patches in THIS same
+        // setup:upgrade process. WriterInterface::save() persists to the DB and
+        // cleans the config cache, but the already-loaded in-memory ScopeConfig
+        // is not refreshed — so without this reinit, AddLegalGuaranteeContent
+        // (which depends on this patch) reads a stale, empty label_language and
+        // creates no page even though the value is correctly saved.
+        if ($wrote) {
+            $this->reinitableConfig->reinit();
         }
 
         return $this;
